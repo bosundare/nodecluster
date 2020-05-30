@@ -1,0 +1,23 @@
+<section id="add" class="container">
+    <div class="form-wrap">
+      <h1>Login to Perform Admin Tasks</h1>
+      <%= typeof msg != 'undefined' ? msg : '' %>
+      <%- include('./partials/messages') %>
+      <form method="POST", action="/users/login">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" class="input-box" 
+            maxlength="100" required value="<%= typeof username != 'undefined' ? username : '' %>">
+            
+          </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" class="input-box" placeholder="Enter your password"
+          maxlength="100" required >
+        </div>
+                
+        <input type="submit" value="Submit" class="btn btn-reverse">
+      </form>
+    </div>
+  </section>

@@ -1,0 +1,39 @@
+<h2 class="text-center">Cluster Details</h2>
+<% if (typeof clusters == '') { %>
+
+    <p>No Entry found</p>
+    <% } else{ %>
+<table class="table table-striped">
+    <tr>
+        <td>Cluster Name</td>
+        <td><%= clusters.clustername %></td>
+    </tr>
+    <tr>
+        <td>Primary Vlan</td>
+        <td><%= clusters.privlan %></td>
+    </tr>
+    <tr>
+        <td>Secondary Vlan</td>
+        <td><%= clusters.secvlan %></td>
+    </tr>
+    <tr>
+        <td>TOR 1 IP Address</td>
+        <td><%= clusters.tor1ip %></td>
+    </tr>
+    <tr>
+        <td>TOR 2 IP Address</td>
+        <td><%= clusters.tor2ip %></td>
+    </tr>
+    <tr>
+        <td>Physical Interface</td>
+        <td><%= clusters.interface %></td>
+    </tr>
+    
+    </table>
+    <% if (user) { %>
+        <a class="btn btn-primary" href="/cluster/edit/<%= clusters.id %>">Edit</a><a class="btn btn-danger" href="/cluster/delete/<%= clusters.id %>">Delete</a>
+        <% } else{ %>
+            <p>Log in to perform administrative cluster tasks</p>
+            <% } %>
+            <% } %>
+    

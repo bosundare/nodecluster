@@ -1,0 +1,43 @@
+<section id="add" class="container">
+    <div class="form-wrap">
+      <h1>Add A Cluster</h1>
+      <%= typeof msg != 'undefined' ? msg : '' %>
+      <%- include('./partials/messages') %>
+      <form method="POST", action="/cluster/add">
+        <div class="input-group">
+          <label for="clustername">Cluster Name</label>
+          <input type="text" name="clustername" id="clustername" class="input-box" placeholder="eg. PHX-POC001"
+            maxlength="100" required value="<%= typeof clustername != 'undefined' ? clustername : '' %>">
+            
+          </div>
+        
+        <div class="input-group">
+          <label for="privlan">Primary Vlan</label>
+          <input type="text" name="privlan" id="privlan" class="input-box" placeholder="Enter Primary Vlan id"
+          maxlength="100" required value="<%= typeof privlan != 'undefined' ? privlan : '' %>">
+        </div>
+        <div class="input-group">
+            <label for="secvlan">Secondary Vlan</label>
+            <input type="text" name="secvlan" id="secvlan" class="input-box" placeholder="Enter Secondary Vlan id"
+            maxlength="100" required value="<%= typeof secvlan != 'undefined' ? secvlan : '' %>">
+        </div>
+        <div class="input-group">
+          <label for="tor1ip">TOR 1 Switch IP Address</label>
+          <input type="text" name="tor1ip" id="tor1ip" class="input-box" placeholder="TOR1 Switch IP Address"
+          required value="<%= typeof tor1ip != 'undefined' ? tor1ip : '' %>">
+        </div>
+        <div class="input-group">
+            <label for="tor2ip">TOR 2 Switch IP Address</label>
+            <input type="text" name="tor2ip" id="tor2ip" class="input-box" placeholder="TOR2 Switch IP Address"
+            required value="<%= typeof tor2ip != 'undefined' ? tor2ip : '' %>">
+        </div>
+        <div class="input-group">
+          <label for="interface">Physical Interface</label>
+          <input type="text" name="interface" id="interface" class="input-box" placeholder="10G Interface of Cluster eg Et18/1-4"
+            required value="<%= typeof interface != 'undefined' ? interface : '' %>"></textarea>
+        </div>
+        
+        <input type="submit" value="Add Cluster" class="btn btn-reverse">
+      </form>
+    </div>
+  </section>

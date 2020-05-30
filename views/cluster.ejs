@@ -1,0 +1,26 @@
+<h2 class="text-center">All Clusters</h2>
+<div class="table-responsive"></div>
+<%- include('./partials/messages') %>
+<table class="table table-striped">
+    <tr>
+        <th>Cluster Name</th>
+        <th>Primary Vlan</th>
+        <th>Secondary Vlan</th>
+        <th>TOR 1 IP</th>
+        <th>TOR 2 IP</th>
+        <th>Physical Interface</th>
+    </tr>
+    <% clusters.forEach(function(cluster) { %>
+        
+        <tr>
+         <td><a href="/cluster/<%= cluster.id %>"><%= cluster.clustername %></a></td>
+         <td><%= cluster.privlan %></td>
+         <td><%= cluster.secvlan %></td>
+         <td><%= cluster.tor1ip %></td>
+         <td><%= cluster.tor2ip %></td>
+         <td><%= cluster.interface %></td>
+         
+       </tr>
+    <% }); %>
+    </table>
+</div>
