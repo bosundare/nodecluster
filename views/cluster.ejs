@@ -23,4 +23,30 @@
        </tr>
     <% }); %>
     </table>
-</div>
+    <% if (paginate.hasPreviousPages || paginate.hasNextPages(pageCount) ) { %>
+        <div class="navigation well-sm" id="pagination">
+          <ul class="pager">
+            <% if (paginate.hasPreviousPages) { %>
+              <li class="previous">
+                <a href="<%= paginate.href(true) %>">
+                  <i class="fa fa-arrow-circle-left"></i>
+                  Previous
+                </a>  
+              </li>
+            <% } %>  
+            <% if (pages) { %>
+              <% pages.forEach(function(page, i){ %>
+                <a class="btn btn-primary" href="<%= page.url %>"><%= page.number %></a>
+              <% }); %>
+            <% } %>  
+            <% if (paginate.hasNextPages(pageCount)) { %>
+              <li class="next">
+                <a href="<%= paginate.href() %>">
+                  Next &nbsp;
+                  <i class="fa fa-arrow-circle-right"></i>
+                </a>  
+              </li>
+            <% } %>  
+            </ul>      
+          </div>
+        <% } %>

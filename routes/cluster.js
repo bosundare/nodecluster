@@ -6,15 +6,39 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 const session = require('express-session');
+const paginate = require('express-paginate')
 
-// Display all Clusters Information
-router.get('/', (req, res) => 
-  Cluster.findAll({limit: 40})
-    .then(
-      clusters => res.render('cluster', {
-            clusters, user: req.user
-        }))
-    .catch(err => console.log(err)));
+
+router.use(paginate.middleware(20, 50));
+
+router.get('/',async (req, res, next) =>{
+  Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip})
+  .then(clusters =>{
+    const itemCount = clusters.count;
+    const pageCount = Math.ceil(clusters.count / req.query.limit);
+    console.log(itemCount,pageCount)
+      res.render('cluster', {
+      user: req.user,
+      clusters: clusters.rows,
+      pageCount,
+      itemCount,
+      pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+      
+    });
+    
+})
+.catch(err => next(err))
+});
+
+// // Display all pagianted records
+// router.get('/', (req, res) => {
+//   Cluster.findAll({limit: 40})
+//     .then(
+//       clusters => res.render('cluster', {
+//             clusters, user: req.user
+//         }))
+//     .catch(err => console.log(err))
+//   });
 
 // Display add Cluster form
 router.get('/add', ensureAuthenticated, (req, res) => res.render('add',{user: req.user}));
