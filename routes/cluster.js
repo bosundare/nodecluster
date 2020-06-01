@@ -44,13 +44,13 @@ router.get('/',async (req, res, next) =>{
 router.get('/add', ensureAuthenticated, (req, res) => res.render('add',{user: req.user}));
 
 // Search for Clusters
-router.get('/search', (req, res) => {
+router.get('/search', async (req, res, next) => {
     let { term } = req.query;
   
     // Make Uppercase
     term = term.toUpperCase();
   
-    Cluster.findAll({ where: {
+    Cluster.findAndCountAll({ where: {
       [Op.or]: [
         { 
           clustername: {[Op.like]: '%' + term + '%'}
@@ -71,11 +71,22 @@ router.get('/search', (req, res) => {
           interface: {[Op.like]: '%' + term + '%'}
         }
       ]
-                          }
+      },limit: req.query.limit, offset: req.skip
    })
     
-    .then(clusters => res.render('search', { clusters }))
-    .catch(err => console.log(err));
+    .then(clusters =>{
+      const itemCount = clusters.count;
+      const pageCount = Math.ceil(clusters.count / req.query.limit);
+        res.render('search', {
+        user: req.user,
+        clusters: clusters.rows,
+        pageCount,
+        itemCount,
+        pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+        });
+      
+  })
+  .catch(err => next(err))
   });
 
   //Get single cluster details
