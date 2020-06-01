@@ -16,13 +16,12 @@ router.get('/',async (req, res, next) =>{
   .then(clusters =>{
     const itemCount = clusters.count;
     const pageCount = Math.ceil(clusters.count / req.query.limit);
-    console.log(itemCount,pageCount)
       res.render('cluster', {
       user: req.user,
       clusters: clusters.rows,
       pageCount,
       itemCount,
-      pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+      pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
       
     });
     
@@ -82,7 +81,7 @@ router.get('/search', async (req, res, next) => {
         clusters: clusters.rows,
         pageCount,
         itemCount,
-        pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+        pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
         });
       
   })
