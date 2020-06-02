@@ -2,11 +2,11 @@
     <div class="col-md-6 m-auto">
       <div class="card card-body">
         <h1 class="text-center mb-3">
-          <i class="fas fa-user-plus"></i> Add New Admin User
+          <i class="fas fa-user-plus"></i> Change your Password
         </h1>
         <%- include('./partials/messages') %>
         <%= typeof msg != 'undefined' ? msg : '' %>
-        <form action="/users/register" method="POST">
+        <form action="/users/passwd" method="POST">
           <div class="form-group">
             <label for="name">Username</label>
             <input
@@ -15,8 +15,9 @@
               name="username"
               class="form-control"
               placeholder="Enter Username"
-              value="<%= typeof username != 'undefined' ? username : '' %>"
+              value="<%= user %>"
               required
+              disabled="disabled"
             />
           </div>
 
@@ -27,8 +28,8 @@
               id="password"
               name="password"
               class="form-control"
-              placeholder="Create Password"
-              value="<%= typeof password != 'undefined' ? password : '' %>"
+              placeholder="Enter New Password"
+              value=""
               required
             />
           </div>
@@ -39,13 +40,13 @@
               id="password2"
               name="password2"
               class="form-control"
-              placeholder="Confirm Password"
-              value="<%= typeof password2 != 'undefined' ? password2 : '' %>"
+              placeholder="Confirm New Password"
+              value=""
               required
             />
           </div>
           <button type="submit" class="btn btn-primary btn-block">
-            Register
+            Change Password
           </button>
         </form>
         
