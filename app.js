@@ -6,8 +6,9 @@ const app = express();
 const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
-
-
+const expressValidator = require('express-validator');
+const User = require('./models/Users');
+const bcrypt = require('bcryptjs');
 
 require('./config/passport')(passport);
 
@@ -18,8 +19,30 @@ app.use(
     saveUninitialized: true
   })
 );
+// Express Messages Middleware
+app.use(require('connect-flash')());
+app.use((req, res, next) => {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
 
+// Express Validator Middleware
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
 
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
 
 // Passport middleware
 app.use(passport.initialize());
@@ -42,6 +65,29 @@ const db = require('./config/database');
 // Test DB
 db.authenticate()
   .then(() => console.log('Database Connected'))
+  .then(User.findOne({ where: {username: 'admin'}})
+  .then(user=>{
+    if(user) {
+      console.log('Admin user exists, skipping first time user creation')
+    } else {
+      const newUser = new User ({
+        username: 'admin',password: 'password'
+      });
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then(user => {
+              console.log('admin user created with default password of "password"')
+                })
+            .catch(err => console.log(err));
+        });
+      });
+    }
+  })
+  )
   .catch(err => console.log('Error: ' + err))
 
 // EJS

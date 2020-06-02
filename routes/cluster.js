@@ -7,9 +7,8 @@ const Op = Sequelize.Op;
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 const session = require('express-session');
 const paginate = require('express-paginate')
-
-
 router.use(paginate.middleware(20, 50));
+const {clusterValidationRules,userValidationRules} = require('../config/validation')
 
 router.get('/',async (req, res, next) =>{
   Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip})
@@ -29,18 +28,51 @@ router.get('/',async (req, res, next) =>{
 .catch(err => next(err))
 });
 
-// // Display all pagianted records
-// router.get('/', (req, res) => {
-//   Cluster.findAll({limit: 40})
-//     .then(
-//       clusters => res.render('cluster', {
-//             clusters, user: req.user
-//         }))
-//     .catch(err => console.log(err))
-//   });
-
 // Display add Cluster form
 router.get('/add', ensureAuthenticated, (req, res) => res.render('add',{user: req.user}));
+
+//Create Cluster
+router.post('/add', ensureAuthenticated, clusterValidationRules(),
+(req,res,next)=>{
+  const { clustername, privlan, secvlan, tor1ip, tor2ip, interface } = req.body;
+  let errors = req.validationErrors();
+  if (errors) {
+    console.log(errors);
+       res.render('add',
+        { 
+         errors: errors, 
+         user: req.user,
+         clustername:req.body.clustername,
+         privlan,
+         secvlan,
+         tor1ip,
+         tor2ip,
+         interface
+        });
+     } else {
+      Cluster.findOne({where: {clustername: req.body.clustername}}).then(clustername => {
+        if (clustername) {
+          let errors = [];
+          errors.push({ msg: 'Clustername already exist' });
+          
+          res.render('add', {errors,clustername:req.body.clustername,privlan,secvlan,tor1ip,tor2ip,interface, user: req.user});
+        } else {
+          
+          Cluster.create({
+              clustername:req.body.clustername,
+              privlan,
+              secvlan,
+              tor1ip,
+              tor2ip,
+              interface
+          })
+          .then(cluster => {
+            req.flash('success_msg','Cluster successfully added');
+            res.redirect('/cluster/add');
+          })          
+          .catch(err => console.log(err));
+        }});
+    }});
 
 // Search for Clusters
 router.get('/search', async (req, res, next) => {
@@ -72,8 +104,7 @@ router.get('/search', async (req, res, next) => {
       ]
       },limit: req.query.limit, offset: req.skip
    })
-    
-    .then(clusters =>{
+      .then(clusters =>{
       const itemCount = clusters.count;
       const pageCount = Math.ceil(clusters.count / req.query.limit);
         res.render('search', {
@@ -83,7 +114,6 @@ router.get('/search', async (req, res, next) => {
         itemCount,
         pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
         });
-      
   })
   .catch(err => next(err))
   });
@@ -98,69 +128,6 @@ router.get('/search', async (req, res, next) => {
       }
       res.render('clusterid', {clusters})}))
 
-    //Add Cluster 
-    router.post('/add', ensureAuthenticated, (req, res) => {
-      const { clustername, privlan, secvlan, tor1ip, tor2ip, interface } = req.body;
-      let errors = [];
-    
-      if(!clustername) {
-        errors.push({ text: 'Please add a Cluster Name' });
-      }
-      if(!privlan) {
-        errors.push({ text: 'Please add a Primary Vlan' });
-      }
-      if(!secvlan) {
-        errors.push({ text: 'Please add a secondary Vlan' });
-      }
-      if(!tor1ip) {
-        errors.push({ text: 'Please add a TOR1 Switch IP Address' });
-      }
-      if(!tor2ip) {
-        errors.push({ text: 'Please add a TOR2 Switch IP Address' });
-      }
-      if(!interface) {
-        errors.push({ text: 'Please add a Physical Interface' });
-      }
-    
-      if (errors.length > 0) {
-        res.render('add', {
-          errors,
-          clustername,
-          privlan,
-          secvlan,
-          tor1ip,
-          tor2ip,
-          interface
-        });
-
-      } else {
-        Cluster.findOne({where: {clustername: req.body.clustername}})
-        .then(clustername => {
-          if (clustername) {
-            let msg = req.body.clustername +' Already exist'
-            console.log(msg)
-            res.render('add', {msg,clustername:req.body.clustername,privlan,secvlan,tor1ip,tor2ip,interface});
-          } else {
-            
-            Cluster.create({
-                clustername:req.body.clustername,
-                privlan,
-                secvlan,
-                tor1ip,
-                tor2ip,
-                interface
-            }).then(cluster => {
-
-              let msg = req.body.clustername +' Successfully added'
-              console.log(msg)
-              res.render('add', {msg, user: req.user});
-            })
-            
-            .catch(err => console.log(err));
-          }
-          });
-      }
-    });
 // Editing Cluster, but protected route
   router.get('/edit/:id', ensureAuthenticated, (req,res)=>
     Cluster.findByPk(req.params.id)
@@ -178,14 +145,12 @@ router.get('/search', async (req, res, next) => {
         tor2ip:req.body.tor2ip,
         interface:req.body.interface
       }).then(cluster => {
+        req.flash('success_msg','Cluster successfully updated');
+        res.redirect('/cluster/edit/'+req.params.id);
+      }).catch(cluster => {
 
-        let msg = ' Successfully Updated'
-        res.render('cluster_edit', {msg, clusters, user: req.user});
-    }).catch(cluster => {
-
-      let msg = ' Failed to Update, Check form input'
-      console.log(msg)
-      res.render('cluster_edit', {msg, clusters, user: req.user});
+        req.flash('error_msg','Update failed, Check input');
+        res.redirect('/cluster/edit/'+req.params.id);
   })
   }))
 
