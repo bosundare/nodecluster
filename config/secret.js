@@ -1,4 +1,4 @@
 module.exports = {
-    switchadmin:'bosun.dare',
-    switchpass: 'District9513'
+    switchadmin:'svc_tacacadmin',
+    switchpass: 'XLabs/4u2'
   }

@@ -182,10 +182,8 @@ router.get('/search', async (req, res, next) => {
     Cluster.findByPk(req.params.id)
     .then(clusters => res.render('cluster_vlan', {clusters, user: req.user})
     )
-    
     .catch(err => console.log(err))
   )
-
   router.post('/config/:id', ensureAuthenticated, [
      check('extravlan')
     .blacklist(' ')
@@ -264,8 +262,8 @@ router.get('/search', async (req, res, next) => {
                       req.flash('success_msg', 'Successfully Pushed Vlans')
                       return res.redirect('/cluster/config/'+req.params.id)
                       
-                      }
-                })
+                    }
+            })
             }
 })}
     })
@@ -286,7 +284,7 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
      req.flash('error_msg', 'Invalid Vlan Input')
      return res.redirect('/cluster/config/'+req.params.id);
    } else {
-     
+    
    let runcomm1 = [
                   "en",
                   "conf t",
@@ -305,16 +303,14 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
      password: config.switchpass,
      command: runcomm1
  }
- 
- ssh.command(tor1Options, (err,data) => 
+  ssh.command(tor1Options, (err,data) => 
  {if (err) {
    // req.flash('errors_msg', 'Failed in Configuring Switches')
    // res.redirect('/cluster/config/'+req.params.id)
    console.log(err)
    req.flash('error_msg', 'Failed to connect to '+tor1ip)
    return res.redirect('/cluster/config/'+req.params.id)
-   
-  
+ 
  } 
  if (!err) {
    console.log("Changed TOR1 Configs")
@@ -354,10 +350,4 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
          }
 })}
  })
-
-
-
-
-
-  
-  module.exports = router;
+module.exports = router;
