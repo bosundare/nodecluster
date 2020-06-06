@@ -227,6 +227,14 @@ label {
   margin-bottom: 1.2rem;
 }
 
+.input-box-ro {
+  padding: 0.5rem;
+  font-size: 18px;
+  width: 100%;
+  margin-bottom: 1.2rem;
+  background-color: grey;
+}
+
 /* Tablets */
 @media (max-width: 800px) {
   .container {
@@ -279,6 +287,9 @@ label {
   header nav li {
     margin: 0 10px;
   }
+  /* input:read-only {
+    background-color: green;
+  } */
 
   .search-form {
     display: flex;
@@ -289,6 +300,9 @@ label {
     flex-basis: 0;
   }
 
+  .inputReadonly {
+    background-color: yellow;
+  }
   .search-form i {
     display: none;
   }

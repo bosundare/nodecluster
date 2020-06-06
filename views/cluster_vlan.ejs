@@ -1,0 +1,54 @@
+<section id="add" class="container">
+    <div class="form-wrap">
+      <h1>Map Vlans to Cluster</h1>
+      <%= typeof msg != 'undefined' ? msg : '' %>
+      <%- include('./partials/messages') %>
+      <form method="POST", action="" id="vlanform">
+       
+        <div class="input-group">
+          <label for="clustername">Cluster Name: </label>
+          <input type="text" name="clustername" id="clustername" class="input-box-ro" placeholder="eg. PHX-POC001"
+            maxlength="100" required value="<%= typeof clusters.clustername != 'undefined' ? clusters.clustername : '' %>" readonly>
+            
+          </div>
+        
+        <div class="input-group">
+          <label for="privlan">Primary Vlan</label>
+          <input type="text" name="privlan" id="privlan" class="input-box-ro" placeholder="Enter Primary Vlan id"
+          maxlength="100" required value="<%= typeof clusters.privlan != 'undefined' ? clusters.privlan : '' %>" readonly>
+        </div>
+        <div class="input-group">
+            <label for="secvlan">Secondary Vlan</label>
+            <input type="text" name="secvlan" id="secvlan" class="input-box-ro" placeholder="Enter Secondary Vlan id"
+            maxlength="100" required value="<%= typeof clusters.secvlan != 'undefined' ? clusters.secvlan : '' %>" readonly>
+        </div>
+        <div class="input-group">
+          <label for="tor1ip">TOR 1 Switch IP Address</label>
+          <input type="text" name="tor1ip" id="tor1ip" class="input-box-ro" placeholder="TOR1 Switch IP Address"
+          required value="<%= typeof clusters.tor1ip != 'undefined' ? clusters.tor1ip : '' %>" readonly>
+        </div>
+        <div class="input-group">
+            <label for="tor2ip">TOR 2 Switch IP Address</label>
+            <input type="text" name="tor2ip" id="tor2ip" class="input-box-ro" placeholder="TOR2 Switch IP Address"
+            required value="<%= typeof clusters.tor2ip != 'undefined' ? clusters.tor2ip : '' %>" readonly>
+        </div>
+        <div class="input-group">
+          <label for="interface">Physical Interface</label>
+          <input type="text" name="interface" id="interface" class="input-box-ro" placeholder="10G Interface of Cluster eg Et18/1-4"
+            required value="<%= typeof clusters.interface != 'undefined' ? clusters.interface : '' %>" readonly>
+        </div>
+        <div class="input-group">
+            <label for="extravlan">Extra Vlans to be Mapped (Vlans would be Mapped to the Interface and Switch listed above)</label>
+            <input type="text" name="extravlan" id="extravlan" class="input-box" placeholder="Extra Vlan ID seperated by Comma" required 
+            value="<%= typeof clusters.extravlan != 'undefined' ? clusters.extravlan : '' %>">
+          </div>
+          <button id="submit" formaction="/cluster/config/<%= clusters.id %>" name="mapvlans" value="Map Vlans" class="btn btn-reverse">Map Vlans</button>
+          <button id="submit" formaction="/cluster/remvlan/<%= clusters.id %>" name="mapvlans" value="Remove Vlans" class="btn btn-danger">Remove Vlans</button>
+
+       
+          <!-- <input type="submit" value="Map Vlans" class="btn btn-reverse" name="mapvlans" onclick="mapvlans()" />
+       <input type="submit" value="Remove Vlans" class="btn btn-danger" name="remvlan" onclick="remvlan()" /> -->
+      </form>
+
+    </div>
+  </section>

@@ -9,6 +9,9 @@ const session = require('express-session');
 const paginate = require('express-paginate')
 router.use(paginate.middleware(20, 50));
 const {clusterValidationRules,userValidationRules} = require('../config/validation')
+const { check, validationResult } = require('express-validator/check');
+let ssh = require('../config/newssh');
+const config = require('../config/secret');
 
 router.get('/',async (req, res, next) =>{
   Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip})
@@ -135,9 +138,10 @@ router.get('/search', async (req, res, next) => {
     .catch(err => console.log(err))
   )
  // Posting to  editing cluster but protected route
-  router.post('/edit/:id', ensureAuthenticated,(req,res) =>
+  router.post('/edit/:id', ensureAuthenticated, clusterValidationRules(),(req,res) =>
   Cluster.findByPk(req.params.id)
     .then(clusters =>{
+      
       clusters.update({
         privlan:req.body.privlan,
         secvlan:req.body.secvlan,
@@ -173,4 +177,187 @@ router.get('/search', async (req, res, next) => {
 })
 })
   );
+
+  router.get('/config/:id', ensureAuthenticated, (req,res)=>
+    Cluster.findByPk(req.params.id)
+    .then(clusters => res.render('cluster_vlan', {clusters, user: req.user})
+    )
+    
+    .catch(err => console.log(err))
+  )
+
+  router.post('/config/:id', ensureAuthenticated, [
+     check('extravlan')
+    .blacklist(' ')
+    .isLength({min:1}).trim().withMessage('Vlan Field is required')
+    .matches(/^(\d{1,4},)*\d{1,4}$/).withMessage('Invalid Vlans Entered')
+    ],
+    (req,res) => 
+    {
+   const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = req.body;
+      let errors = req.validationErrors()
+      if(errors) 
+        {
+        console.log(errors);
+        req.flash('error_msg', 'Invalid Vlan Input')
+        return res.redirect('/cluster/config/'+req.params.id)
+
+        // res.render('cluster_vlan', {
+        //   clusters, user: req.user          
+        // });
+      } else {
+        // return new Promise ((resolve,reject) => {
+      let runcomm1 = [
+        "en",
+        "conf t",
+        "vlan "+ extravlan,
+        "name autocreated",
+        "interface "+ interface,
+        "switchport trunk allowed vlan add " +extravlan,
+        "end",
+        "exit"
+         ]
+        let tor1Options = {
+        ip: tor1ip,
+        username: config.switchadmin,
+        password: config.switchpass,
+        command: runcomm1
+    }
+    
+    ssh.command(tor1Options, (err,data) => 
+    {if (err) {
+      // req.flash('errors_msg', 'Failed in Configuring Switches')
+      // res.redirect('/cluster/config/'+req.params.id)
+      console.log(err)
+      req.flash('error_msg', 'Failed to connect to '+tor1ip)
+      return res.redirect('/cluster/config/'+req.params.id)
+    } 
+    if (!err) {
+      console.log("Changed TOR1 Configs")
+              
+      let runcomm2 = [
+                "en",
+                "conf t",
+                "vlan "+ extravlan,
+                "name autocreated",
+                "interface "+ interface,
+                "switchport trunk allowed vlan add " +extravlan,
+                "end",
+                "exit",
+           ]
+     
+            let tor2Options = {
+                ip: tor2ip,
+                username: config.switchadmin,
+                password: config.switchpass,
+                command: runcomm2
+            }
+            
+            ssh.command(tor2Options, (err,data) => 
+            {if (err) {
+              req.flash('errors_msg', 'Failed to connect to '+tor2ip)
+              res.redirect('/cluster/config/'+req.params.id)
+              // console.log(err)
+            } 
+              if(!err) 
+                    {
+                      req.flash('success_msg', 'Successfully Pushed Vlans')
+                      return res.redirect('/cluster/config/'+req.params.id)
+                      
+                      }
+                })
+            }
+})}
+    })
+// Deleting Extra Vlans
+router.post('/remvlan/:id', ensureAuthenticated, [
+  check('extravlan')
+ .blacklist(' ')
+ .isLength({min:1}).trim().withMessage('Vlan Field is required')
+ .matches(/^(\d{1,4},)*\d{1,4}$/).withMessage('Invalid Vlans Entered')
+ ],
+ (req,res) => 
+ {
+const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = req.body;
+   let errors = req.validationErrors()
+   if(errors) {
+
+     console.log("Cannot Del Vlans");
+     req.flash('error_msg', 'Invalid Vlan Input')
+     return res.redirect('/cluster/config/'+req.params.id);
+   } else {
+     
+   let runcomm1 = [
+                  "en",
+                  "conf t",
+                  "interface "+ interface,
+                  "switchport trunk allowed vlan remove " +extravlan,
+                  "vlan "+ privlan,secvlan,
+                  "name HPOC",
+                  "interface "+ interface,
+                  "switchport trunk allowed vlan add " +privlan,secvlan,
+                  "end",
+                  "exit"
+                    ]
+     let tor1Options = {
+     ip: tor1ip,
+     username: config.switchadmin,
+     password: config.switchpass,
+     command: runcomm1
+ }
+ 
+ ssh.command(tor1Options, (err,data) => 
+ {if (err) {
+   // req.flash('errors_msg', 'Failed in Configuring Switches')
+   // res.redirect('/cluster/config/'+req.params.id)
+   console.log(err)
+   req.flash('error_msg', 'Failed to connect to '+tor1ip)
+   return res.redirect('/cluster/config/'+req.params.id)
+   
+  
+ } 
+ if (!err) {
+   console.log("Changed TOR1 Configs")
+           
+   let runcomm2 = [
+                  "en",         
+                  "conf t",
+                "interface "+ interface,
+                "switchport trunk allowed vlan remove " +extravlan,
+                "vlan "+ privlan,secvlan,
+                "name HPOC",
+                "interface "+ interface,
+                "switchport trunk allowed vlan add " +privlan,secvlan,
+                "end",
+                "exit"
+                ]
+  
+         let tor2Options = {
+             ip: tor2ip,
+             username: config.switchadmin,
+             password: config.switchpass,
+             command: runcomm2
+         }
+         
+         ssh.command(tor2Options, (err,data) => 
+         {if (err) {
+           req.flash('errors_msg', 'Failed in Configuring Switches')
+           res.redirect('/cluster/config/'+req.params.id)
+           console.log(err)} 
+           if(!err) 
+                 {
+                   req.flash('success_msg', 'Successfully Removed Extra Vlans and Restored Default Vlans')
+                   return res.redirect('/cluster/config/'+req.params.id)
+                   
+                   }
+             })
+         }
+})}
+ })
+
+
+
+
+
+  
   module.exports = router;

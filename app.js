@@ -10,6 +10,7 @@ const expressValidator = require('express-validator');
 const User = require('./models/Users');
 const bcrypt = require('bcryptjs');
 
+
 require('./config/passport')(passport);
 
 app.use(
