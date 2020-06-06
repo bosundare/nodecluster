@@ -12,6 +12,7 @@ const session = require('express-session');
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 const {userValidationRules} = require('../config/validation');
 const { check, validationResult } = require('express-validator/check');
+const logger = require('../config/logger')
 
 // Gets the login page
 router.get('/login', forwardAuthenticated, function(req, res, next){
@@ -61,6 +62,7 @@ router.post('/register', ensureAuthenticated, userValidationRules(), (req,res) =
             newUser
               .save()
               .then(user => {
+                logger.info('New user '+username + ' added')
                 req.flash(
                   'success_msg',
                   'User has been successfully added'
@@ -144,6 +146,7 @@ router.post('/passwd', ensureAuthenticated,
 // logout
 router.get('/logout', function(req, res){
     req.logout();
+    logger.info('User '+ user.username + 'logged out')
     req.flash('success_msg', 'You are logged out');
     res.redirect('/users/login');
   });

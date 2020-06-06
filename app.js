@@ -9,7 +9,7 @@ const session = require('express-session');
 const expressValidator = require('express-validator');
 const User = require('./models/Users');
 const bcrypt = require('bcryptjs');
-
+const logger = require('./config/logger')
 
 require('./config/passport')(passport);
 
@@ -65,11 +65,11 @@ app.use(function(req, res, next) {
 const db = require('./config/database');
 // Test DB
 db.authenticate()
-  .then(() => console.log('Database Connected'))
+  .then(() => logger.info('Database Connected'))
   .then(User.findOne({ where: {username: 'admin'}})
   .then(user=>{
     if(user) {
-      console.log('Admin user exists, skipping first time user creation')
+      logger.info('Admin user exists, skipping first time user creation')
     } else {
       const newUser = new User ({
         username: 'admin',password: 'password'
@@ -81,15 +81,15 @@ db.authenticate()
           newUser
             .save()
             .then(user => {
-              console.log('admin user created with default password of "password"')
+              logger.info('admin user created with default password of "password"')
                 })
-            .catch(err => console.log(err));
+            .catch(err => logger.critical(err));
         });
       });
     }
   })
   )
-  .catch(err => console.log('Error: ' + err))
+  .catch(err => logger.critical('Error: ' + err))
 
 // EJS
 app.use(expressLayouts);

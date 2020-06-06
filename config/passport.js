@@ -2,6 +2,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const Users = require('../models/Users');
 const config = require('../config/database');
 const bcrypt = require('bcryptjs');
+const logger = require('../config/logger')
 
 module.exports = function(passport) {
     passport.use(
@@ -17,6 +18,7 @@ module.exports = function(passport) {
           bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) throw err;
             if (isMatch) {
+              logger.info('user '+username + ' successfully signed in')
               return done(null, user);
             } else {
               return done(null, false, { message: 'Password incorrect' });

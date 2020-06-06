@@ -11,7 +11,8 @@ router.use(paginate.middleware(20, 50));
 const {clusterValidationRules,userValidationRules} = require('../config/validation')
 const { check, validationResult } = require('express-validator/check');
 let ssh = require('../config/newssh');
-const config = require('../config/secret');
+const logger = require('../config/logger')
+const config = require('../config/secret')
 
 router.get('/',async (req, res, next) =>{
   Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip})
@@ -40,7 +41,7 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
   const { clustername, privlan, secvlan, tor1ip, tor2ip, interface } = req.body;
   let errors = req.validationErrors();
   if (errors) {
-    console.log(errors);
+    logger.critical(errors);
        res.render('add',
         { 
          errors: errors, 
@@ -70,6 +71,7 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
               interface
           })
           .then(cluster => {
+            logger.info('Added Cluster '+req.body.clustername + 'to database')
             req.flash('success_msg','Cluster successfully added');
             res.redirect('/cluster/add');
           })          
@@ -166,13 +168,13 @@ router.get('/search', async (req, res, next) => {
       where: {id:req.params.id}})
       .then(cluster => {
 
-      let msg = ' Successfully Deleted'
-      console.log(msg)
+      let msg = ' Successfully Deleted '+clusters.clustername
+      logger.info(msg)
       res.redirect('/cluster');
   }).catch(cluster => {
 
-    let msg = ' Failed to Delete'
-    console.log(msg)
+    let msg = ' Failed to Delete '+clusters.clustername
+    logger.critical(msg)
     res.redirect('/cluster/'+req.params.id);
 })
 })
@@ -196,7 +198,7 @@ router.get('/search', async (req, res, next) => {
       let errors = req.validationErrors()
       if(errors) 
         {
-        console.log(errors);
+        logger.critical(errors);
         req.flash('error_msg', 'Invalid Vlan Input')
         return res.redirect('/cluster/config/'+req.params.id)
 
@@ -226,12 +228,12 @@ router.get('/search', async (req, res, next) => {
     {if (err) {
       // req.flash('errors_msg', 'Failed in Configuring Switches')
       // res.redirect('/cluster/config/'+req.params.id)
-      console.log(err)
+      logger.crit(err)
       req.flash('error_msg', 'Failed to connect to '+tor1ip)
       return res.redirect('/cluster/config/'+req.params.id)
     } 
     if (!err) {
-      console.log("Changed TOR1 Configs")
+      logger.info("Changed TOR1 Configs "+tor1ip)
               
       let runcomm2 = [
                 "en",
@@ -259,6 +261,7 @@ router.get('/search', async (req, res, next) => {
             } 
               if(!err) 
                     {
+                      logger.info('Added Vlan '+extravlan + ' to ' + req.body.clustername)
                       req.flash('success_msg', 'Successfully Pushed Vlans')
                       return res.redirect('/cluster/config/'+req.params.id)
                       
@@ -342,6 +345,7 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
            console.log(err)} 
            if(!err) 
                  {
+                  logger.info('Removed Vlan '+extravlan + ' from ' + req.body.clustername)
                    req.flash('success_msg', 'Successfully Removed Extra Vlans and Restored Default Vlans')
                    return res.redirect('/cluster/config/'+req.params.id)
                    
