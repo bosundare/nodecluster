@@ -83,7 +83,7 @@ db.authenticate()
             .then(user => {
               logger.info('admin user created with default password of "password"')
                 })
-            .catch(err => logger.critical(err));
+            .catch(err => logger.crit(err));
         });
       });
     }

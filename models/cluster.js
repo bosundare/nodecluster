@@ -22,4 +22,8 @@ const Cluster = db.define('cluster', {
     }
  
 })
+
+Cluster.sync().then(() => {
+    console.log('Table model for Clusters Synced');
+})
 module.exports = Cluster

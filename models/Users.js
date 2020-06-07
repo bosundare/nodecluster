@@ -9,4 +9,7 @@ const Users = db.define('users', {
         type: Sequelize.STRING(255)
     }
 })
+Users.sync().then(() => {
+    console.log('Table model for Users Synced');
+})
 module.exports = Users

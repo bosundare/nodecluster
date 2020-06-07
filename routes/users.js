@@ -146,7 +146,6 @@ router.post('/passwd', ensureAuthenticated,
 // logout
 router.get('/logout', function(req, res){
     req.logout();
-    logger.info('User '+ user.username + 'logged out')
     req.flash('success_msg', 'You are logged out');
     res.redirect('/users/login');
   });
