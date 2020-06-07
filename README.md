@@ -47,6 +47,7 @@ At first run, an admin user with default password of "password" is created for a
 * BCrypt Hashing
 * Express Validator
 * Logger
+* SSH2
 
 
 
