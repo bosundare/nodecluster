@@ -41,7 +41,7 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
   const { clustername, privlan, secvlan, tor1ip, tor2ip, interface } = req.body;
   let errors = req.validationErrors();
   if (errors) {
-    logger.critical(errors);
+    logger.crit(errors);
        res.render('add',
         { 
          errors: errors, 
@@ -174,7 +174,7 @@ router.get('/search', async (req, res, next) => {
   }).catch(cluster => {
 
     let msg = ' Failed to Delete '+clusters.clustername
-    logger.critical(msg)
+    logger.crit(msg)
     res.redirect('/cluster/'+req.params.id);
 })
 })
@@ -198,7 +198,7 @@ router.get('/search', async (req, res, next) => {
       let errors = req.validationErrors()
       if(errors) 
         {
-        logger.critical(errors);
+        logger.crit(errors);
         req.flash('error_msg', 'Invalid Vlan Input')
         return res.redirect('/cluster/config/'+req.params.id)
 

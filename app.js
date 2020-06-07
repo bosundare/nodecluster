@@ -89,7 +89,7 @@ db.authenticate()
     }
   })
   )
-  .catch(err => logger.critical('Error: ' + err))
+  .catch(err => logger.crit('Error: ' + err))
 
 // EJS
 app.use(expressLayouts);
