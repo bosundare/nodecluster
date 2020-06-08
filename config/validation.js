@@ -38,4 +38,14 @@ const userValidationRules = () => {
     }),
        ]
 }
-module.exports = {clusterValidationRules, userValidationRules}
+
+const vlanValidationRules = () => {
+  return [
+    check('extravlan')
+    .blacklist(' ')
+    .isLength({min:1}).trim().withMessage('Vlan Field is required')
+    .matches(/^(?:[1-9]\d{0,2}|[1-3]\d{3}|40(?:[0-8]\d|9[0-3]))(?:[,-] *(?:[1-9]\d{0,2}|[1-3]\d{3}|40(?:[0-8]\d|9[0-3]))?)*$/).withMessage('Invalid Vlans Entered')
+     ]
+}
+
+module.exports = {clusterValidationRules, userValidationRules, vlanValidationRules}

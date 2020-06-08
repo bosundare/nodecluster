@@ -8,7 +8,7 @@ const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 const session = require('express-session');
 const paginate = require('express-paginate')
 router.use(paginate.middleware(20, 50));
-const {clusterValidationRules,userValidationRules} = require('../config/validation')
+const {clusterValidationRules,userValidationRules,vlanValidationRules} = require('../config/validation')
 const { check, validationResult } = require('express-validator/check');
 let ssh = require('../config/newssh');
 const logger = require('../config/logger')
@@ -186,13 +186,7 @@ router.get('/search', async (req, res, next) => {
     )
     .catch(err => console.log(err))
   )
-  router.post('/config/:id', ensureAuthenticated, [
-     check('extravlan')
-    .blacklist(' ')
-    .isLength({min:1}).trim().withMessage('Vlan Field is required')
-    .matches(/^(\d{1,4},)*\d{1,4}$/).withMessage('Invalid Vlans Entered')
-    ],
-    (req,res) => 
+  router.post('/config/:id', ensureAuthenticated, vlanValidationRules(),(req,res) => 
     {
    const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = req.body;
       let errors = req.validationErrors()
@@ -271,19 +265,17 @@ router.get('/search', async (req, res, next) => {
 })}
     })
 // Deleting Extra Vlans
-router.post('/remvlan/:id', ensureAuthenticated, [
-  check('extravlan')
- .blacklist(' ')
- .isLength({min:1}).trim().withMessage('Vlan Field is required')
- .matches(/^(\d{1,4},)*\d{1,4}$/).withMessage('Invalid Vlans Entered')
- ],
- (req,res) => 
+router.post('/remvlan/:id', ensureAuthenticated, vlanValidationRules(), (req,res) => 
  {
 const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = req.body;
+
+
    let errors = req.validationErrors()
+   
    if(errors) {
 
      console.log("Cannot Del Vlans");
+     console.log(errors)
      req.flash('error_msg', 'Invalid Vlan Input')
      return res.redirect('/cluster/config/'+req.params.id);
    } else {
