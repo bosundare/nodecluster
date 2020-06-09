@@ -5,10 +5,12 @@ const clusterValidationRules = () => {
   .isLength({min:9}).trim().withMessage('Cluster Name should be in format RTP-POC###'),
   check('privlan')
   .isLength({min:1}).trim().withMessage('Primary Vlan is required')
-  .isInt().withMessage('Primary Vlan should only be numbers'),
+  .isInt().withMessage('Primary Vlan should only be numbers')
+  .matches(/^(?:[1-9]\d{0,2}|[1-3]\d{3}|40(?:[0-8]\d|9[0-3]))$/).withMessage('Vlan ID must be between 1 and 4093'),
   check('secvlan')
   .isLength({min:1}).trim().withMessage('Secondary Vlan is required')
-  .isInt().withMessage('Secondary Vlan should only be numbers'),
+  .isInt().withMessage('Secondary Vlan should only be numbers')
+  .matches(/^(?:[1-9]\d{0,2}|[1-3]\d{3}|40(?:[0-8]\d|9[0-3]))$/).withMessage('Vlan ID must be between 1 and 4093'),
   check('tor1ip')
   .isLength({min:4}).trim().withMessage('IP address is required')
   .isIP().withMessage('IP Address should be in the format eg 10.10.10.10'),
