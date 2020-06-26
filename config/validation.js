@@ -20,6 +20,7 @@ const clusterValidationRules = () => {
   check('interface')
   .isLength({min:5}).trim().withMessage('Minimum lenght of 5 in the form Et1/1')
   .isLength({max:8}).trim().withMessage('Max lenght of Interface is 8')
+  .matches(/^(?:(E|e)[t][0-2]?\d{0,1}[/][1][-][2-4])$/).withMessage('Interface must be in the format Et28/1-4')
   ]
 }
 
