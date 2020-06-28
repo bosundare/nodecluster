@@ -161,7 +161,7 @@ router.get('/search', async (req, res, next) => {
   }))
 
   // Posting to delete cluster, but protected route
-  router.get('/delete/:id', ensureAuthenticated, (req,res) =>
+  router.delete('/delete/:id', ensureAuthenticated, (req,res) =>
   Cluster.findByPk(req.params.id)
   .then(clusters =>{
     clusters.destroy({

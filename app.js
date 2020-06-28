@@ -10,6 +10,7 @@ const expressValidator = require('express-validator');
 const User = require('./models/Users');
 const bcrypt = require('bcryptjs');
 const logger = require('./config/logger')
+const methodOverride = require('method-override')
 
 require('./config/passport')(passport);
 
@@ -99,6 +100,18 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(
+  methodOverride(function (req, res) {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+      // look in urlencoded POST bodies and delete it
+      let method = req.body._method
+      delete req.body._method
+      return method
+    }
+  })
+)
+
 
 // Creates the global user only if logged in
 app.get('*', function(req, res, next){

@@ -20,6 +20,7 @@
     "express-paginate": "^1.0.0",
     "express-session": "^1.17.1",
     "express-validator": "^5.3.1",
+    "method-override": "^3.0.0",
     "mysql2": "^2.1.0",
     "node-ssh": "^10.0.2",
     "passport": "^0.4.1",

@@ -31,7 +31,15 @@
     
     </table>
     <% if (user) { %>
-        <a class="btn btn-primary" href="/cluster/edit/<%= clusters.id %>">Edit</a><a class="btn btn-primary" href="/cluster/config/<%= clusters.id %>">Modify Vlans</a><a class="btn btn-danger" href="/cluster/delete/<%= clusters.id %>">Delete</a>
+            <form action="/cluster/delete/<%= clusters.id %>" method="POST" id="delete-form"></form><input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="btn btn-danger">
+                DELETE
+            </button>
+        </form><a class="btn btn-primary" href="/cluster/edit/<%= clusters.id %>">Edit</a><a class="btn btn-primary" href="/cluster/config/<%= clusters.id %>">Modify Vlans</a>
+        
+        
+        
+        <!-- <a class="btn btn-danger" href="/cluster/delete/<%= clusters.id %>">Delete</a> -->
         <%- include('./partials/messages') %>
         <% } else{ %>
             <p>Log in to perform administrative cluster tasks</p>

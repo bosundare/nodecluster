@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
+const { clusterValidationRules } = require('../config/validation');
 
-const Cluster = db.define('cluster', {
+const Cluster = db.define('clusters', {
     clustername: {
         type: Sequelize.STRING(20)
     },
@@ -23,7 +24,27 @@ const Cluster = db.define('cluster', {
  
 })
 
+const Reservation = db.define('reservation', {
+    extravlan: {
+        type: Sequelize.INTEGER
+    },
+    startDate: {
+        type: Sequelize.DATE
+    },
+    stopDate: {
+        type: Sequelize.DATE
+    },
+    status: {
+        type: Sequelize.ENUM('applied','notapplied')
+    },
+})
+Reservation.belongsTo(Cluster)
+
+
 Cluster.sync().then(() => {
     console.log('Table model for Clusters Synced');
+})
+Reservation.sync().then(() => {
+    console.log('Table model for Reservations Synced');
 })
 module.exports = Cluster
