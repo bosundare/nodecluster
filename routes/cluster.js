@@ -14,7 +14,9 @@ let ssh = require('../config/newssh');
 const logger = require('../config/logger')
 const config = require('../config/secret')
 
+
 router.get('/',async (req, res, next) =>{
+  
   Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip})
   .then(clusters =>{
     const itemCount = clusters.count;
