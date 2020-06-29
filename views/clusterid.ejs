@@ -32,10 +32,11 @@
     </table>
     <% if (user) { %>
             <form action="/cluster/delete/<%= clusters.id %>" method="POST" id="delete-form"><input type="hidden" name="_method" value="DELETE">
-            <button type="submit" class="btn btn-danger">
+                <a class="btn btn-primary" href="/cluster/edit/<%= clusters.id %>">Edit</a><a class="btn btn-primary" href="/cluster/config/<%= clusters.id %>">Modify Vlans</a>
+                <button type="submit" class="btn btn-danger">
                 DELETE
             </button>
-        </form><a class="btn btn-primary" href="/cluster/edit/<%= clusters.id %>">Edit</a><a class="btn btn-primary" href="/cluster/config/<%= clusters.id %>">Modify Vlans</a>
+        </form>
         
         
         
