@@ -47,14 +47,14 @@ const Reservation = db.define('reservations', {
     },
 })
 
-Cluster.hasOne(Reservation)
-
+// Cluster.hasOne(Reservation)
+// Reservation.belongsTo(Cluster)
 
 Cluster.sync().then(() => {
     console.log('Table model for Clusters Synced');
 })
 
-Reservation.belongsTo(Cluster)
+
 Reservation.sync().then(() => {
     console.log('Table model for Reservations Synced');
 })
