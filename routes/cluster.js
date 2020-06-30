@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const Cluster = require('../models/cluster');
+const Reservation = require('../models/reservation');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
@@ -29,6 +30,19 @@ router.get('/',async (req, res, next) =>{
       pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
       
     });
+    
+})
+.catch(err => next(err))
+});
+
+router.get('/reservation',(req, res, next) =>{
+  
+  Reservation.findAndCountAll({limit: req.query.limit, offset: req.skip})
+  .then(reservations =>{
+      res.render('reservation', {
+      user: req.user,
+      reservations: reservations.rows
+      });
     
 })
 .catch(err => next(err))

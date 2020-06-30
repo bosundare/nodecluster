@@ -25,37 +25,12 @@ const Cluster = db.define('clusters', {
  
 })
 
-const Reservation = db.define('reservations', {
-    // clusterid: {
-    //     type: Sequelize.INTEGER,
-    //     reference: {
-    //         model: Cluster,
-    //         Key: "id"
-    //     }
-    // },
-    extravlan: {
-        type: Sequelize.INTEGER
-    },
-    startDate: {
-        type: Sequelize.DATE
-    },
-    stopDate: {
-        type: Sequelize.DATE
-    },
-    status: {
-        type: Sequelize.ENUM('applied','notapplied')
-    },
-})
 
-// Cluster.hasOne(Reservation)
-// Reservation.belongsTo(Cluster)
 
 Cluster.sync().then(() => {
     console.log('Table model for Clusters Synced');
 })
 
 
-Reservation.sync().then(() => {
-    console.log('Table model for Reservations Synced');
-})
+
 module.exports = Cluster

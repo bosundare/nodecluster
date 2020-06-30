@@ -1,0 +1,25 @@
+<h2 class="text-center">All Reservations</h2>
+<div class="table-responsive"></div>
+<%- include('./partials/messages') %>
+<table class="table table-striped">
+    <tr>
+        <th>Reservation Start Date</th>
+        <th>Reservation Stop Date</th>
+        <th>Reservation Extra Vlan</th>
+        <th>Reservation Status</th>
+        <th>Reservation Cluster ID</th>
+        
+    </tr>
+    <% reservations.forEach(function(reservation) { %>
+        
+        <tr>
+         
+         <td><%= reservation.startDate %></td>
+         <td><%= reservation.stopDate %></td>
+         <td><%= reservation.extravlan %></td>
+         <td><%= reservation.status %></td>
+         <td><a href="/cluster/<%= reservation.clusterId %>"><%= reservation.clusterId %></a></td>
+         
+       </tr>
+    <% }); %>
+    </table>
