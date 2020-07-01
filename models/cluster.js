@@ -1,8 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
-
-
 const Cluster = db.define('clusters', {
     clustername: {
         type: Sequelize.STRING(20),
@@ -30,8 +28,8 @@ const Cluster = db.define('clusters', {
 
 Cluster.sync().then(() => {
     console.log('Table model for Clusters Synced');
+    return Cluster
 })
-
 
 
 module.exports = Cluster
