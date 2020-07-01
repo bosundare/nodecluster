@@ -3,23 +3,20 @@
 <%- include('./partials/messages') %>
 <table class="table table-striped">
     <tr>
-        <th>Reservation Start Date</th>
-        <th>Reservation Stop Date</th>
+        <th>Cluster Name</th>
         <th>Reservation Extra Vlan</th>
         <th>Reservation Status</th>
-        <th>Reservation Cluster ID</th>
-        
+        <th>Reservation Start Date</th>
+        <th>Reservation Stop Date</th>
     </tr>
     <% reservations.forEach(function(reservation) { %>
         
         <tr>
-         
-         <td><%= reservation.startDate %></td>
-         <td><%= reservation.stopDate %></td>
+         <td><a href="/cluster/<%= reservation.cluster.id %>"><%= reservation.cluster.clustername %></a></td>
          <td><%= reservation.extravlan %></td>
          <td><%= reservation.status %></td>
-         <td><a href="/cluster/<%= reservation.clusterId %>"><%= reservation.clusterId %></a></td>
-         
-       </tr>
+         <td><%= reservation.startDate %></td>
+         <td><%= reservation.stopDate %></td>
+      </tr>
     <% }); %>
     </table>

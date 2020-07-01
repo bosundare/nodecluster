@@ -1,7 +1,5 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
-const Reservation = require('./reservation');
-
 
 const Cluster = db.define('clusters', {
     clustername: {
