@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
-
+const Reservation = require('./reservation');
 
 
 const Cluster = db.define('clusters', {
@@ -29,8 +29,8 @@ const Cluster = db.define('clusters', {
 
 Cluster.sync().then(() => {
     console.log('Table model for Clusters Synced');
+    return Cluster
 })
-
 
 
 module.exports = Cluster

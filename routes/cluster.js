@@ -18,8 +18,13 @@ const config = require('../config/secret')
 
 router.get('/',async (req, res, next) =>{
   
-  Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip})
+  Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip, 
+    include: [{
+    model: Reservation,
+    attributes: ["id"]}]
+  })
   .then(clusters =>{
+    console.log(clusters.reservation)
     const itemCount = clusters.count;
     const pageCount = Math.ceil(clusters.count / req.query.limit);
       res.render('cluster', {
@@ -37,11 +42,14 @@ router.get('/',async (req, res, next) =>{
 
 router.get('/reservation',(req, res, next) =>{
   
-  Reservation.findAndCountAll({limit: req.query.limit, offset: req.skip})
+  Reservation.findAll({limit: req.query.limit, offset: req.skip, include: Cluster})
+  
   .then(reservations =>{
+    console.log(reservations)
       res.render('reservation', {
       user: req.user,
       reservations: reservations.rows
+      
       });
     
 })

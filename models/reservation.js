@@ -29,16 +29,17 @@ const Reservation = db.define('reservations', {
 
     },
 })
-
 Cluster.hasOne(Reservation, {
     onDelete: 'CASCADE',
     foreignKey: {
         allowNull: false
     }
-
 })
+
+Reservation.belongsTo(Cluster)
 Reservation.sync().then(() => {
     console.log('Table model for Reservations Synced');
+    
 })
 
 module.exports = Reservation
