@@ -7,7 +7,7 @@ const Reservation = db.define('reservations', {
     //     type: Sequelize.STRING,
     //     reference: {
     //         model: Cluster,
-    //         Key: "clustername"
+    //         Key: "id"
     //     }
     // },
     extravlan: {
