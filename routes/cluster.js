@@ -97,6 +97,39 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
         }});
     }});
 
+
+
+//Create Vlan Reservation
+router.post('/vlanreserve/:id', ensureAuthenticated, [
+  check('extravlan')
+  .isLength({min:1}).trim().withMessage('Vlan is required')
+  .isInt().withMessage('Primary Vlan should only be numbers')
+  .matches(/^(?:[1-9]\d{0,2}|[1-3]\d{3}|40(?:[0-8]\d|9[0-3]))$/).withMessage('Vlan ID must be between 1 and 4093'),
+],
+(req,res,next)=>{
+  const { startDate, stopDate, extravlan } = req.body;
+  const clusterId = req.params.id
+  let errors = req.validationErrors();
+  if (errors) {
+    logger.crit(errors)
+      req.flash('error_msg','Update failed, Check Vlan Input');
+			res.redirect('/cluster/'+req.params.id);
+     } else {
+      Reservation.create({
+          clusterId,
+          startDate,
+          stopDate,
+          extravlan
+          
+      })
+      .then(cluster => {
+        logger.info('Added Reservation '+req.params.id + ' to database')
+        req.flash('success_msg','Cluster Reservation added');
+        res.redirect('/cluster/'+req.params.id);
+      })          
+      .catch(err => console.log(err));
+    }});
+
 // Search for Clusters
 router.get('/search', async (req, res, next) => {
     let { term } = req.query;
