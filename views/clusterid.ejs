@@ -31,19 +31,23 @@
     
     </table>
     <% if (user) { %>
-            <form action="/cluster/delete/<%= clusters.id %>" method="POST" id="delete-form"><input type="hidden" name="_method" value="DELETE">
-                <a class="btn btn-primary" href="/cluster/edit/<%= clusters.id %>">Edit</a><a class="btn btn-primary" href="/cluster/config/<%= clusters.id %>">Modify Vlans</a>
-                <button type="submit" class="btn btn-danger">
-                DELETE
-            </button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
                 Add Reservation
               </button>
-        </form>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#clustereditmodal">
+                Edit
+              </button>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#vlanmapmodal">
+                Modify Vlans
+              </button>
+              <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletecluster">
+                Delete
+              </button>
+        
         <!-- Button trigger modal -->
 
   
-  <!-- Modal -->
+  <!-- Modal for Reservation-->
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -100,10 +104,163 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal for Edit Cluster-->
+  <div class="modal fade" id="clustereditmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLongTitle">Edit Cluster</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                          <div class="form-wrap">
+                          <%= typeof msg != 'undefined' ? msg : '' %>
+                    <%- include('./partials/messages') %>
+                    <form method="POST", action="/cluster/edit/<%= clusters.id %>">
+                      <div class="input-group">
+                        <label for="clustername">Cluster Name</label>
+                        <input type="text" name="clustername" id="clustername" class="input-box" placeholder="eg. PHX-POC001"
+                          maxlength="100" required value="<%= clusters.clustername %>" disabled="disabled">
+                          
+                        </div>
+                      
+                      <div class="input-group">
+                        <label for="privlan">Primary Vlan</label>
+                        <input type="text" name="privlan" id="privlan" class="input-box" placeholder="Enter Primary Vlan id"
+                        maxlength="100" required value="<%= clusters.privlan %>">
+                      </div>
+                      <div class="input-group">
+                          <label for="secvlan">Secondary Vlan</label>
+                          <input type="text" name="secvlan" id="secvlan" class="input-box" placeholder="Enter Secondary Vlan id"
+                          maxlength="100" required value="<%= clusters.secvlan %>">
+                      </div>
+                      <div class="input-group">
+                        <label for="tor1ip">TOR 1 Switch IP Address</label>
+                        <input type="text" name="tor1ip" id="tor1ip" class="input-box" placeholder="TOR1 Switch IP Address"
+                        required value="<%= clusters.tor1ip %>">
+                      </div>
+                      <div class="input-group">
+                          <label for="tor2ip">TOR 2 Switch IP Address</label>
+                          <input type="text" name="tor2ip" id="tor2ip" class="input-box" placeholder="TOR2 Switch IP Address"
+                          required value="<%= clusters.tor2ip %>">
+                      </div>
+                      <div class="input-group">
+                        <label for="interface">Physical Interface</label>
+                        <input type="text" name="interface" id="interface" class="input-box" placeholder="10G Interface of Cluster eg Et18/1-4"
+                          required value="<%= clusters.interface %>"></textarea>
+                      </div>
+                      
+                      <input type="submit" value="Edit Cluster" class="btn btn-reverse">
+                    </form>
+                            </div>
+                
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Modify Vlans -->
+  <div class="modal fade" id="vlanmapmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLongTitle">Map or Remove Vlans</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-wrap">
+            <%= typeof msg != 'undefined' ? msg : '' %>
+            <%- include('./partials/messages') %>
+            <form method="POST", action="" id="vlanform">
+             
+              <div class="input-group">
+                <label for="clustername">Cluster Name: </label>
+                <input type="text" name="clustername" id="clustername" class="input-box-ro" placeholder="eg. PHX-POC001"
+                  maxlength="100" required value="<%= typeof clusters.clustername != 'undefined' ? clusters.clustername : '' %>" readonly>
+                  
+                </div>
+              
+              <div class="input-group">
+                <label for="privlan">Primary Vlan</label>
+                <input type="text" name="privlan" id="privlan" class="input-box-ro" placeholder="Enter Primary Vlan id"
+                maxlength="100" required value="<%= typeof clusters.privlan != 'undefined' ? clusters.privlan : '' %>" readonly>
+              </div>
+              <div class="input-group">
+                  <label for="secvlan">Secondary Vlan</label>
+                  <input type="text" name="secvlan" id="secvlan" class="input-box-ro" placeholder="Enter Secondary Vlan id"
+                  maxlength="100" required value="<%= typeof clusters.secvlan != 'undefined' ? clusters.secvlan : '' %>" readonly>
+              </div>
+              <div class="input-group">
+                <label for="tor1ip">TOR 1 Switch IP Address</label>
+                <input type="text" name="tor1ip" id="tor1ip" class="input-box-ro" placeholder="TOR1 Switch IP Address"
+                required value="<%= typeof clusters.tor1ip != 'undefined' ? clusters.tor1ip : '' %>" readonly>
+              </div>
+              <div class="input-group">
+                  <label for="tor2ip">TOR 2 Switch IP Address</label>
+                  <input type="text" name="tor2ip" id="tor2ip" class="input-box-ro" placeholder="TOR2 Switch IP Address"
+                  required value="<%= typeof clusters.tor2ip != 'undefined' ? clusters.tor2ip : '' %>" readonly>
+              </div>
+              <div class="input-group">
+                <label for="interface">Physical Interface</label>
+                <input type="text" name="interface" id="interface" class="input-box-ro" placeholder="10G Interface of Cluster eg Et18/1-4"
+                  required value="<%= typeof clusters.interface != 'undefined' ? clusters.interface : '' %>" readonly>
+              </div>
+              <div class="input-group">
+                  <label for="extravlan">Extra Vlans to be Mapped (Vlans would be Mapped to the Interface and Switch listed above)</label>
+                  <input type="text" name="extravlan" id="extravlan" class="input-box" placeholder="Extra Vlan ID seperated by Comma" required 
+                  value="<%= typeof clusters.extravlan != 'undefined' ? clusters.extravlan : '' %>">
+                </div>
+                <button id="submit" formaction="/cluster/config/<%= clusters.id %>" name="mapvlans" value="Map Vlans" class="btn btn-reverse">Map Vlans</button>
+                <button id="submit" formaction="/cluster/remvlan/<%= clusters.id %>" name="mapvlans" value="Remove Vlans" class="btn btn-danger">Remove Vlans</button>
+                </form>
+      
+          </div>
+                
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal to Delete Cluster -->
+  <div class="modal fade" id="deletecluster" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
         
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLabel">Delete Cluster</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/cluster/delete/<%= clusters.id %>" method="POST" id="delete-form" role="form">
+            <input type="hidden" name="_method" value="DELETE"> 
+          <h5>This would remove <%= clusters.clustername %> from the Database!!!</h5>
+        </div>
         
-        
-        <!-- <a class="btn btn-danger" href="/cluster/delete/<%= clusters.id %>">Delete</a> -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          
+            <button type="submit" class="btn btn-danger">Yes Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
         <%- include('./partials/messages') %>
         <% } else{ %>
             <p>Log in to perform administrative cluster tasks</p>
