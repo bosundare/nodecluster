@@ -97,6 +97,39 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
         }});
     }});
 
+
+
+//Create Vlan Reservation
+router.post('/vlanreserve/:id', ensureAuthenticated, [
+  check('extravlan')
+  .isLength({min:1}).trim().withMessage('Vlan is required')
+  .isInt().withMessage('Primary Vlan should only be numbers')
+  .matches(/^(?:[1-9]\d{0,2}|[1-3]\d{3}|40(?:[0-8]\d|9[0-3]))$/).withMessage('Vlan ID must be between 1 and 4093'),
+],
+(req,res,next)=>{
+  const { startDate, stopDate, extravlan } = req.body;
+  const clusterId = req.params.id
+  let errors = req.validationErrors();
+  if (errors) {
+    logger.crit(errors)
+      req.flash('error_msg','Update failed, Check Vlan Input');
+			res.redirect('/cluster/'+req.params.id);
+     } else {
+      Reservation.create({
+          clusterId,
+          startDate,
+          stopDate,
+          extravlan
+          
+      })
+      .then(cluster => {
+        logger.info('Added Reservation '+req.params.id + ' to database')
+        req.flash('success_msg','Cluster Reservation added');
+        res.redirect('/cluster/'+req.params.id);
+      })          
+      .catch(err => console.log(err));
+    }});
+
 // Search for Clusters
 router.get('/search', async (req, res, next) => {
     let { term } = req.query;
@@ -151,12 +184,7 @@ router.get('/search', async (req, res, next) => {
       }
       res.render('clusterid', {clusters})}))
 
-// Editing Cluster, but protected route
-  router.get('/edit/:id', ensureAuthenticated, (req,res)=>
-    Cluster.findByPk(req.params.id)
-    .then(clusters => res.render('cluster_edit', {clusters, user: req.user}))
-    .catch(err => console.log(err))
-  )
+
  // Posting to  editing cluster but protected route
   router.post('/edit/:id', ensureAuthenticated, clusterValidationRules(),(req,res) =>
   Cluster.findByPk(req.params.id)
@@ -170,11 +198,11 @@ router.get('/search', async (req, res, next) => {
         interface:req.body.interface
       }).then(cluster => {
         req.flash('success_msg','Cluster successfully updated');
-        res.redirect('/cluster/edit/'+req.params.id);
+        res.redirect('/cluster/'+req.params.id);
       }).catch(cluster => {
 
         req.flash('error_msg','Update failed, Check input');
-        res.redirect('/cluster/edit/'+req.params.id);
+        res.redirect('/cluster/'+req.params.id);
   })
   }))
 
@@ -198,12 +226,7 @@ router.get('/search', async (req, res, next) => {
 })
   );
 
-  router.get('/config/:id', ensureAuthenticated, (req,res)=>
-    Cluster.findByPk(req.params.id)
-    .then(clusters => res.render('cluster_vlan', {clusters, user: req.user})
-    )
-    .catch(err => console.log(err))
-  )
+//Post to Configure vlans
   router.post('/config/:id', ensureAuthenticated, vlanValidationRules(),(req,res) => 
     {
    const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = req.body;
@@ -212,7 +235,7 @@ router.get('/search', async (req, res, next) => {
         {
         logger.crit(errors);
         req.flash('error_msg', 'Invalid Vlan Input')
-        return res.redirect('/cluster/config/'+req.params.id)
+        return res.redirect('/cluster/'+req.params.id)
 
         // res.render('cluster_vlan', {
         //   clusters, user: req.user          
@@ -242,7 +265,7 @@ router.get('/search', async (req, res, next) => {
       // res.redirect('/cluster/config/'+req.params.id)
       logger.crit(err)
       req.flash('error_msg', 'Failed to connect to '+tor1ip)
-      return res.redirect('/cluster/config/'+req.params.id)
+      return res.redirect('/cluster/'+req.params.id)
     } 
     if (!err) {
       logger.info("Changed TOR1 Configs "+tor1ip)
@@ -268,14 +291,14 @@ router.get('/search', async (req, res, next) => {
             ssh.command(tor2Options, (err,data) => 
             {if (err) {
               req.flash('errors_msg', 'Failed to connect to '+tor2ip)
-              res.redirect('/cluster/config/'+req.params.id)
+              res.redirect('/cluster/'+req.params.id)
               // console.log(err)
             } 
               if(!err) 
                     {
                       logger.info('Added Vlan '+extravlan + ' to ' + req.body.clustername)
                       req.flash('success_msg', 'Successfully Pushed Vlans')
-                      return res.redirect('/cluster/config/'+req.params.id)
+                      return res.redirect('/cluster/'+req.params.id)
                       
                     }
             })
@@ -295,7 +318,7 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
      console.log("Cannot Del Vlans");
      console.log(errors)
      req.flash('error_msg', 'Invalid Vlan Input')
-     return res.redirect('/cluster/config/'+req.params.id);
+     return res.redirect('/cluster/'+req.params.id);
    } else {
     
    let runcomm1 = [
@@ -322,7 +345,7 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
    // res.redirect('/cluster/config/'+req.params.id)
    console.log(err)
    req.flash('error_msg', 'Failed to connect to '+tor1ip)
-   return res.redirect('/cluster/config/'+req.params.id)
+   return res.redirect('/cluster/'+req.params.id)
  
  } 
  if (!err) {
@@ -351,13 +374,13 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
          ssh.command(tor2Options, (err,data) => 
          {if (err) {
            req.flash('errors_msg', 'Failed in Configuring Switches')
-           res.redirect('/cluster/config/'+req.params.id)
+           res.redirect('/cluster/'+req.params.id)
            console.log(err)} 
            if(!err) 
                  {
                   logger.info('Removed Vlan '+extravlan + ' from ' + req.body.clustername)
                    req.flash('success_msg', 'Successfully Removed Extra Vlans and Restored Default Vlans')
-                   return res.redirect('/cluster/config/'+req.params.id)
+                   return res.redirect('/cluster/'+req.params.id)
                    
                    }
              })
