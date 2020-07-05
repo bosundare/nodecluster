@@ -17,39 +17,44 @@
   <header class="inner">
     <h2><a href="/"><i class="fas fa-code"></i>
         X-Labs Clusters</a></h2>
-    <nav>
-      <ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarToggler">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           <% if (user) { %>
          <li>
-          <a href="/cluster/add">Add Clusters</a>
+          <a href="/cluster/add" class="nav-link">Add Clusters</a>
         </li>
         <li>
-          <a href="/users/register">Add User</a>
+          <a href="/users/register" class="nav-link">Add User</a>
         </li>
         <li>
-          <a href="/users/passwd">Change Password</a>
+          <a href="/users/passwd" class="nav-link">Change Password</a>
         </li>
         <li>
-          <a href="/cluster/reservation">Reservations</a>
+          <a href="/cluster/reservation" class="nav-link">Reservations</a>
         </li>
         <li>
-          <a href="/users/logout">Logout</a>
+          <a href="/users/logout" class="nav-link">Logout</a>
         </li>
           <% } else{ %>
             <li>
-              <a href="/">Search</a>
+              <a href="/" class="nav-link">Search</a>
             </li>
             <li>
-              <a href="/cluster">All Clusters</a>
+              <a href="/cluster" class="nav-link">All Clusters</a>
             </li>
             <li>
-              <a href="/users/login">Admin Login</a>
+              <a href="/users/login" class="nav-link">Admin Login</a>
             </li>
             <li>
-              <a href="/cluster/reservation">Reservations</a>
+              <a href="/cluster/reservation" class="nav-link">Reservations</a>
             </li>  
             <% }   %>          
       </ul>
+    </div>
     </nav>
   </header>
 
