@@ -4,6 +4,7 @@
     <table class="table table-striped">
     <tr>
         <th>Cluster Name</th>
+        <th>Cluster VIP</th>
         <th>Primary Vlan</th>
         <th>Secondary Vlan</th>
         <th>TOR 1 IP</th>
@@ -14,6 +15,7 @@
         
         <tr>
          <td><a href="/cluster/<%= cluster.id %>"><%= cluster.clustername %></a></td>
+         <td><a href="http://<%= cluster.clusterip %>" target="_blank"><%= cluster.clusterip %></a></td>
          <td><%= cluster.privlan %></td>
          <td><%= cluster.secvlan %></td>
          <td><%= cluster.tor1ip %></td>

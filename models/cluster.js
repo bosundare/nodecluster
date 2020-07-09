@@ -6,6 +6,9 @@ const Cluster = db.define('clusters', {
         type: Sequelize.STRING(20),
         unique: true
     },
+    clusterip: {
+        type: Sequelize.STRING(15)
+    },
     privlan: {
         type: Sequelize.INTEGER
     },

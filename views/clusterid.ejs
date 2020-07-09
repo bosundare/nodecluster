@@ -9,6 +9,10 @@
         <td><%= clusters.clustername %></td>
     </tr>
     <tr>
+      <td>Cluster VIP</td>
+      <td><%= clusters.clusterip %></td>
+  </tr>
+    <tr>
         <td>Primary Vlan</td>
         <td><%= clusters.privlan %></td>
     </tr>
@@ -126,7 +130,11 @@
                           maxlength="100" required value="<%= clusters.clustername %>" disabled="disabled">
                           
                         </div>
-                      
+                        <div class="input-group">
+                          <label for="clusterip">Cluster IP</label>
+                          <input type="text" name="clusterip" id="clusterip" class="input-box" placeholder="Cluster IP"
+                          required value="<%= clusters.clusterip %>">
+                        </div>
                       <div class="input-group">
                         <label for="privlan">Primary Vlan</label>
                         <input type="text" name="privlan" id="privlan" class="input-box" placeholder="Enter Primary Vlan id"

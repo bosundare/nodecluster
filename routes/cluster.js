@@ -143,6 +143,9 @@ router.get('/search', async (req, res, next) => {
           clustername: {[Op.like]: '%' + term + '%'}
         },
         {
+          clusterip: {[Op.like]: '%' + term + '%'}
+        },
+        {
           privlan: {[Op.like]: '%' + term + '%'}
         },
         {
@@ -191,6 +194,7 @@ router.get('/search', async (req, res, next) => {
     .then(clusters =>{
       
       clusters.update({
+        clusterip:req.body.clusterip,
         privlan:req.body.privlan,
         secvlan:req.body.secvlan,
         tor1ip:req.body.tor1ip,
