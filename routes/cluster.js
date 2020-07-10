@@ -56,7 +56,7 @@ router.get('/add', ensureAuthenticated, (req, res) => res.render('add',{user: re
 //Create Cluster
 router.post('/add', ensureAuthenticated, clusterValidationRules(),
 (req,res,next)=>{
-  const { clustername, privlan, secvlan, tor1ip, tor2ip, interface } = req.body;
+  const { clustername, clusterip, privlan, secvlan, tor1ip, tor2ip, interface } = req.body;
   let errors = req.validationErrors();
   if (errors) {
     logger.crit(errors);
@@ -65,6 +65,7 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
          errors: errors, 
          user: req.user,
          clustername:req.body.clustername,
+         clusterip,
          privlan,
          secvlan,
          tor1ip,
@@ -77,11 +78,12 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
           let errors = [];
           errors.push({ msg: 'Clustername already exist' });
           
-          res.render('add', {errors,clustername:req.body.clustername,privlan,secvlan,tor1ip,tor2ip,interface, user: req.user});
+          res.render('add', {errors,clustername:req.body.clustername,clusterip,privlan,secvlan,tor1ip,tor2ip,interface, user: req.user});
         } else {
           
           Cluster.create({
               clustername:req.body.clustername,
+              clusterip,
               privlan,
               secvlan,
               tor1ip,
@@ -100,12 +102,7 @@ router.post('/add', ensureAuthenticated, clusterValidationRules(),
 
 
 //Create Vlan Reservation
-router.post('/vlanreserve/:id', ensureAuthenticated, [
-  check('extravlan')
-  .isLength({min:1}).trim().withMessage('Vlan is required')
-  .isInt().withMessage('Primary Vlan should only be numbers')
-  .matches(/^(?:[1-9]\d{0,2}|[1-3]\d{3}|40(?:[0-8]\d|9[0-3]))$/).withMessage('Vlan ID must be between 1 and 4093'),
-],
+router.post('/vlanreserve/:id', ensureAuthenticated, vlanValidationRules(),
 (req,res,next)=>{
   const { startDate, stopDate, extravlan } = req.body;
   const clusterId = req.params.id

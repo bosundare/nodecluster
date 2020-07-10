@@ -3,6 +3,9 @@ const clusterValidationRules = () => {
   return [
     check('clustername')
   .isLength({min:9}).trim().withMessage('Cluster Name should be in format RTP-POC###'),
+  check('clusterip')
+  .isLength({min:4}).trim().withMessage('IP address is required')
+  .isIP().withMessage('IP Address should be in the format eg 10.10.10.10'),
   check('privlan')
   .isLength({min:1}).trim().withMessage('Primary Vlan is required')
   .isInt().withMessage('Primary Vlan should only be numbers')

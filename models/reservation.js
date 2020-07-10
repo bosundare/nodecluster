@@ -11,7 +11,7 @@ const Reservation = db.define('reservations', {
     //     }
     // },
     extravlan: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(20),
         allowNull: false
     },
     startDate: {

@@ -10,7 +10,11 @@
             maxlength="100" required value="<%= typeof clustername != 'undefined' ? clustername : '' %>">
             
           </div>
-        
+          <div class="input-group">
+            <label for="clusterip">Cluster VIP</label>
+            <input type="text" name="clusterip" id="clusterip" class="input-box" placeholder="Enter Cluster IP"
+            maxlength="100" required value="<%= typeof clusterip != 'undefined' ? clusterip : '' %>">
+          </div>
         <div class="input-group">
           <label for="privlan">Primary Vlan</label>
           <input type="text" name="privlan" id="privlan" class="input-box" placeholder="Enter Primary Vlan id"
