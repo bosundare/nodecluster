@@ -31,7 +31,7 @@ const userValidationRules = () => {
     return [
        check('username')
        .isLength({min:3}).trim().withMessage('Username field must not be empty')
-       .isAlphanumeric().withMessage('Username cannot contain symbols'),
+       .matches(/^[a-zA-Z 0-9\.\_]*$/).withMessage('Username only allows dot and underscore symbols'),
        check('password')
        .isLength({min:5}).trim().withMessage('Minimum 5 Character Password')
        .custom((value,{req, loc, path}) => {
