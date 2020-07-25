@@ -23,7 +23,7 @@ const Reservation = db.define('reservations', {
         allowNull: false
     },
     status: {
-        type: Sequelize.ENUM('applied','notapplied'),
+        type: Sequelize.ENUM('applied','notapplied','error','complete'),
         allowNull: false,
         defaultValue: 'notapplied'
 
