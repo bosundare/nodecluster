@@ -11,6 +11,7 @@ const User = require('./models/Users');
 const bcrypt = require('bcryptjs');
 const logger = require('./config/logger')
 const methodOverride = require('method-override')
+const reservationservice = require('./services/reservation')
 
 require('./config/passport')(passport);
 
@@ -118,9 +119,11 @@ app.get('*', function(req, res, next){
   res.locals.user = req.user || null;
   next();
 });
-
+// Calls the background service process
+reservationservice
 // Welcome Page
 app.get('/', (req, res) => res.render('index'));
+app.get('/reservation', (req, res) => res.render('resindex'));
 // Call the index routes
 app.use('/cluster', require('./routes/cluster'));
 

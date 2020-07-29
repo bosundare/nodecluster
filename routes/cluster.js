@@ -35,6 +35,83 @@ router.get('/',async (req, res, next) =>{
 .catch(err => next(err))
 });
 
+//Get Reservation list
+router.get('/searchres', async (req, res, next) => {
+  let { term } = req.query;
+  // Make Uppercase
+  term = term.toUpperCase();
+  Cluster.findOne({
+    where: {
+      clustername: {[Op.like]: '%' + term + '%'}
+    }
+  }).then(
+    clusters => {
+      if (clusters) {
+        let id = clusters.id
+        console.log(id)
+        Reservation.findAndCountAll({ 
+          include: Cluster,
+          where: {
+          [Op.or]: [
+            {
+              clusterId: {[Op.like]: '%' + id + '%'}
+            },
+            {
+              extravlan: {[Op.like]: '%' + term + '%'}
+            },
+            {
+              status: {[Op.like]: '%' + term + '%'}
+            }
+          ]
+          },limit: req.query.limit, offset: req.skip 
+       })
+          .then(reservations =>{
+          const itemCount = reservations.count;
+          const pageCount = Math.ceil(reservations.count / req.query.limit);
+            res.render('reservation', {
+            user: req.user,
+            reservations: reservations.rows,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
+            });
+      })
+      } else {
+        Reservation.findAndCountAll({ 
+          include: Cluster,
+          where: {
+          [Op.or]: [
+            {
+              extravlan: {[Op.like]: '%' + term + '%'}
+            },
+            {
+              status: {[Op.like]: '%' + term + '%'}
+            }
+          ]
+          },limit: req.query.limit, offset: req.skip 
+       })
+          .then(reservations =>{
+          const itemCount = reservations.count;
+          const pageCount = Math.ceil(reservations.count / req.query.limit);
+            res.render('reservation', {
+            user: req.user,
+            reservations: reservations.rows,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
+            });
+      })
+      }
+     }
+  )
+  
+.catch(err => next(err))
+});
+
+
+
+
+
 router.get('/reservation',(req, res, next) =>{
   
   Reservation.findAndCountAll({limit: req.query.limit, offset: req.skip, include: Cluster})
@@ -174,6 +251,10 @@ router.get('/search', async (req, res, next) => {
   .catch(err => next(err))
   });
 
+
+
+
+
   //Get single cluster details
   router.get('/:id',(req,res)=>
     Cluster.findByPk(req.params.id)
@@ -247,7 +328,6 @@ router.get('/search', async (req, res, next) => {
         "en",
         "conf t",
         "vlan "+ extravlan,
-        "name autocreated",
         "interface "+ interface,
         "switchport trunk allowed vlan add " +extravlan,
         "end",
@@ -275,7 +355,6 @@ router.get('/search', async (req, res, next) => {
                 "en",
                 "conf t",
                 "vlan "+ extravlan,
-                "name autocreated",
                 "interface "+ interface,
                 "switchport trunk allowed vlan add " +extravlan,
                 "end",
@@ -328,7 +407,6 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
                   "interface "+ interface,
                   "switchport trunk allowed vlan remove " +extravlan,
                   "vlan "+ privlan,secvlan,
-                  "name HPOC",
                   "interface "+ interface,
                   "switchport trunk allowed vlan add " +privlan,secvlan,
                   "end",
@@ -358,7 +436,6 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
                 "interface "+ interface,
                 "switchport trunk allowed vlan remove " +extravlan,
                 "vlan "+ privlan,secvlan,
-                "name HPOC",
                 "interface "+ interface,
                 "switchport trunk allowed vlan add " +privlan,secvlan,
                 "end",
