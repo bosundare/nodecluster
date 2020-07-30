@@ -14,7 +14,7 @@ const { check, validationResult } = require('express-validator/check');
 let ssh = require('../config/newssh');
 const logger = require('../config/logger')
 const config = require('../config/secret')
-
+const moment = require('moment-timezone')
 
 router.get('/',async (req, res, next) =>{
   
@@ -48,10 +48,11 @@ router.get('/searchres', async (req, res, next) => {
     clusters => {
       if (clusters) {
         let id = clusters.id
-        console.log(id)
         Reservation.findAndCountAll({ 
           include: Cluster,
           where: {
+            stopDate: {[Op.gt]: moment().subtract(3, 'days').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')},
+            
           [Op.or]: [
             {
               clusterId: {[Op.like]: '%' + id + '%'}
@@ -304,6 +305,27 @@ router.get('/search', async (req, res, next) => {
     let msg = ' Failed to Delete '+clusters.clustername
     logger.crit(msg)
     res.redirect('/cluster/'+req.params.id);
+})
+})
+  );
+
+  // Posting to delete reservation, but protected route
+  router.delete('/delete/reservation/:id', ensureAuthenticated, (req,res) =>
+  Reservation.findByPk(req.params.id, {include: Cluster})
+  .then(reservations =>{
+    reservations.destroy({
+      where: {id:req.params.id}})
+      .then(reservations => {
+
+      let msg = ' Successfully Deleted vlan reservation for '+ reservations.cluster.clustername
+      
+      logger.info(msg)
+      res.redirect('/cluster/searchres?term=');
+  }).catch(err => {
+
+    let msg = ' Failed to Delete '
+    logger.crit(msg)
+    res.redirect('/cluster/searchres?term=');
 })
 })
   );
