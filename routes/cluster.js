@@ -51,7 +51,7 @@ router.get('/searchres', async (req, res, next) => {
         Reservation.findAndCountAll({ 
           include: Cluster,
           where: {
-            stopDate: {[Op.gt]: moment().subtract(3, 'days').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')},
+            stopDate: {[Op.gt]: moment().subtract(5, 'days').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')},
             
           [Op.or]: [
             {
