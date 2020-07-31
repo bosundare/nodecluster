@@ -10,12 +10,12 @@ const logger = require('../config/logger')
 const service = () => {
 setInterval(() => {
     start()
-}, 120 * 1000)
+}, 60 * 60 * 1000)
 
 const start = () => {
 Reservation.findAll({
     where: {
-        startDate: {[Op.lt]: moment().tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')},
+        startDate: {[Op.lt]: moment().format('YYYY-MM-DD HH:mm:ss')},
         status: {[Op.eq]: 'notapplied'}
     }, include: Cluster 
 
@@ -96,7 +96,7 @@ Reservation.findAll({
 Reservation.findAll({
     where: {
         
-        stopDate: {[Op.lt]: moment().tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')},
+        stopDate: {[Op.lt]: moment().format('YYYY-MM-DD HH:mm:ss')},
         status: {[Op.eq]: 'applied'}
     }, include: Cluster 
 
