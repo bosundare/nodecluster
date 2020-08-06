@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../config/database');
 const Cluster = require('../models/cluster');
 const Reservation = require('../models/reservation');
+const Alert = require('../models/alert')
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
@@ -109,10 +110,7 @@ router.get('/searchres', async (req, res, next) => {
 .catch(err => next(err))
 });
 
-
-
-
-
+// Search for Reserved Vlan Instances from Database
 router.get('/reservation',(req, res, next) =>{
   
   Reservation.findAndCountAll({limit: req.query.limit, offset: req.skip, include: Cluster})
@@ -487,4 +485,91 @@ const { clustername, privlan, secvlan, tor1ip, tor2ip, interface, extravlan } = 
          }
 })}
  })
+
+
+ //Get Alert list
+router.get('/searchalert', async (req, res, next) => {
+  let { term } = req.query;
+  // Make Uppercase
+  term = term.toUpperCase();
+  Cluster.findOne({
+    where: {
+      clustername: {[Op.like]: '%' + term + '%'}
+    }
+  }).then(
+    clusters => {
+      if (clusters) {
+        let id = clusters.id
+        Alert.findAndCountAll({ 
+          include: Cluster,
+          where: {
+            totalalerts: {[Op.gt]: 0},
+            
+          [Op.or]: [
+            {
+              clusterId: {[Op.like]: '%' + id + '%'}
+            },
+            {
+              alerts: {[Op.like]: '%' + term + '%'}
+            },
+            
+          ]
+          },limit: req.query.limit, offset: req.skip 
+       })
+          .then(alerts =>{
+          const itemCount = alerts.count;
+          const pageCount = Math.ceil(alerts.count / req.query.limit);
+            res.render('alerts', {
+            user: req.user,
+            alerts: alerts.rows,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
+            });
+      })
+      } else {
+        Alert.findAndCountAll({ 
+          include: Cluster,
+          where: {
+          [Op.or]: [
+            {
+              alerts: {[Op.like]: '%' + term + '%'}
+            },
+            
+          ]
+          },limit: req.query.limit, offset: req.skip 
+       })
+          .then(alerts =>{
+          const itemCount = alerts.count;
+          const pageCount = Math.ceil(alerts.count / req.query.limit);
+            res.render('alerts', {
+            user: req.user,
+            alerts: alerts.rows,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
+            });
+      })
+      }
+     }
+  )
+  
+.catch(err => next(err))
+});
+
+// Search for Reserved Vlan Instances from Database
+router.get('/alerts',(req, res, next) =>{
+  
+  Alert.findAndCountAll({limit: req.query.limit, offset: req.skip, })
+  
+  .then(alerts =>{
+      res.render('alerts', {
+      user: req.user,
+      alerts: alerts.rows
+      
+      });
+    
+})
+.catch(err => next(err))
+});
 module.exports = router;

@@ -12,7 +12,8 @@ const bcrypt = require('bcryptjs');
 const logger = require('./config/logger')
 const methodOverride = require('method-override')
 const reservationservice = require('./services/reservation')
-
+const alertservice = require('./services/alerts')
+const Alert = require('./models/alert');
 require('./config/passport')(passport);
 
 app.use(
@@ -65,6 +66,8 @@ app.use(function(req, res, next) {
 
 // Database
 const db = require('./config/database');
+const Reservation = require('./models/reservation');
+const Cluster = require('./models/cluster');
 // Test DB
 db.authenticate()
   .then(() => logger.info('Database Connected'))
@@ -90,6 +93,7 @@ db.authenticate()
       });
     }
   })
+  
   )
   .catch(err => logger.crit('Error: ' + err))
 
@@ -120,10 +124,12 @@ app.get('*', function(req, res, next){
   next();
 });
 // Calls the background service process
+alertservice
 reservationservice
+
 // Welcome Page
 app.get('/', (req, res) => res.render('index'));
-app.get('/reservation', (req, res) => res.render('resindex'));
+// app.get('/reservation', (req, res) => res.render('resindex'));
 // Call the index routes
 app.use('/cluster', require('./routes/cluster'));
 

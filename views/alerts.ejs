@@ -1,0 +1,69 @@
+<div id="container">
+    <h2 class="text-center">Find a Cluster Alert</h2>
+  <!-- <h1>Find A Cluster</h1> -->
+      <div class="d-flex justify-content-center">
+          <form action="/cluster/searchres" class="search-form">
+            <i class="fas fa-search"></i>
+            <input type="search" name="term" placeholder="e.g PHX-POC001...">
+            <input type="submit" value="Search">
+          </form>
+      </div>
+  </div>
+    <hr>
+  
+  <h2 class="text-center">All Current alerts</h2>
+  <div class="table-responsive">
+  <%- include('./partials/messages') %>
+  <table class="table table-striped">
+      <tr>
+          <th>Cluster Name</th>
+          <th>Cluster IP</th>
+          <th>Total Alerts</th>
+          <th>Alert Title</th>
+          <th>Last Scan Date</th>
+          <% if (user) { %>
+          <th>Actions</th>
+          <% } %>
+      </tr>
+      <% alerts.forEach(function(alert) { %>
+          
+          <tr>
+           <td><a href="/cluster/<%= alert.cluster.id %>"><%= alert.cluster.clustername %></a></td>
+           <td><%= alert.cluster.clusterip %></td>
+           <td><%= alert.totalalerts %></td>
+           <td><%= alert.alerts %></td>
+           <td><%= alert.updatedAt %></td>
+           <% if (user) { %>
+           <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletecluster">Delete</button></td>
+           <% } %>   
+          </tr>
+        <div class="modal fade" id="deletecluster" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              
+              <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel">Delete Alert</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form action="/cluster/delete/reservation/<%= reservation.id %>" method="POST" id="delete-form" role="form">
+                  <input type="hidden" name="_method" value="DELETE"> 
+                <h5>Fix issue before deleting or it would re-appear!</h5>
+              </div>
+              
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                
+                  <button type="submit" class="btn btn-danger">Yes Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+      </table>
+      
+  </div>
+  

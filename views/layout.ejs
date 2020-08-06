@@ -34,24 +34,22 @@
           <a href="/users/passwd" class="nav-link">Change Password</a>
         </li>
         <li>
-          <a href="/reservation" class="nav-link">Reservations</a>
+          <a href="/cluster/searchres?term" class="nav-link">Reservations</a>
         </li>
         <li>
           <a href="/users/logout" class="nav-link">Logout</a>
         </li>
           <% } else{ %>
             <li>
-              <a href="/" class="nav-link">Search</a>
-            </li>
-            <li>
               <a href="/cluster" class="nav-link">All Clusters</a>
             </li>
             <li>
+              <a href="/cluster/searchres?term" class="nav-link">Reservations</a>
+            </li> 
+            <li>
               <a href="/users/login" class="nav-link">Admin Login</a>
             </li>
-            <li>
-              <a href="/reservation" class="nav-link">Reservations</a>
-            </li>  
+             
             <% }   %>          
       </ul>
     </div>
