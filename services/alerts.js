@@ -20,26 +20,15 @@ const service = () => {
     const start = async () => {
       
       try {
-        // step 1
         await Alert.destroy({where: {},truncate: true}).then(console.log('Table cleared'));
-      
-        // step 2
         await Cluster.findAll({
           where: { 
             [Op.or]: [
-          //   {
-          //     clustername: {[Op.like]: '%PHX-POC006%'}
-          //   },
             {
               clustername: {[Op.like]: '%%'}
             },
-          //   {
-          //     clustername: {[Op.like]: '%PHX-POC086%'}
-          //   }
             ]
-              
           }
-      
       })
         .then(
           cluster => {
@@ -60,7 +49,6 @@ const service = () => {
           }
         ).then(console.log('Alerts table populated'));
       
-        // commit
         await Alert.findAll({
           where: {
              status: {[Op.eq]: 'Unchecked'}
@@ -89,7 +77,6 @@ const service = () => {
               axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A1137', {timeout: 5000}),
               
             ])
-              
               .then(axios.spread((nic,ipmi,offlinedisk,storagehealth,satadom,rcmperror,dimmeccerror,smsgdrive,boordrive,nodefail) => {
                 let axiosresponses = [nic,ipmi,offlinedisk,storagehealth,satadom,rcmperror,dimmeccerror,smsgdrive,boordrive,nodefail]
                 axiosresponses.forEach(
@@ -132,10 +119,7 @@ const service = () => {
                       alerts: 'none',
                       status: 'Authentication_Error'
                     })  
-                    
-                  
                 }
-              
                 } 
                 }
                 )
@@ -145,7 +129,7 @@ const service = () => {
         );
       
       } catch (err) {
-        // Rollback transaction if any errors were encountered
+ 
          console.log(err);
       }
     }
