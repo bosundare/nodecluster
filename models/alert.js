@@ -16,9 +16,9 @@ const Alert = db.define('alerts', {
         defaultValue: '0'
     },
     status: {
-        type: Sequelize.ENUM('checked','unchecked','autherror','unreachable'),
+        type: Sequelize.ENUM('Checked','Unchecked','Authentication_Error','Unreachable'),
         allowNull: false,
-        defaultValue: 'unchecked'
+        defaultValue: 'Unchecked'
     },
     alerts: {
         type: Sequelize.STRING(2000),

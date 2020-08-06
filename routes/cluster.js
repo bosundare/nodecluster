@@ -17,6 +17,7 @@ const logger = require('../config/logger')
 const config = require('../config/secret')
 const moment = require('moment-timezone')
 
+
 router.get('/',async (req, res, next) =>{
   
   Cluster.findAndCountAll({limit: req.query.limit, offset: req.skip, include: Reservation})
@@ -42,16 +43,23 @@ router.get('/alerts',(req, res, next) =>{
   Alert.findAndCountAll({limit: req.query.limit, offset: req.skip, 
     where: {
       totalalerts: {[Op.gt]: 0}
-    }, include: Cluster })
-  
-  .then(alerts =>{
-      res.render('alerts', {
-      user: req.user,
-      alerts: alerts.rows
+    }, 
+    order: [
+      ['totalalerts', 'DESC']
+      ], 
+    include: Cluster })
+    .then(alerts =>{
+      const itemCount = alerts.count;
+      const pageCount = Math.ceil(alerts.count / req.query.limit);
+        res.render('alerts', {
+        user: req.user,
+        alerts: alerts.rows,
+        pageCount,
+        itemCount,
+        pages: paginate.getArrayPages(req)(5, pageCount, req.query.page)
+        });
+  })
       
-      });
-    
-        })
 .catch(err => next(err))
 });
 
@@ -71,8 +79,7 @@ router.get('/alerts',(req, res, next) =>{
         Alert.findAndCountAll({ 
           include: Cluster,
           where: {
-            totalalerts: {[Op.gt]: 0},
-            
+                
           [Op.or]: [
             {
               clusterId: {[Op.like]: '%' + id + '%'}
@@ -80,9 +87,15 @@ router.get('/alerts',(req, res, next) =>{
             {
               alerts: {[Op.like]: '%' + term + '%'}
             },
+            {
+              status: {[Op.like]: '%' + term + '%'}
+            },
             
           ]
-          },limit: req.query.limit, offset: req.skip 
+          },
+          order: [
+            ['totalalerts', 'DESC']
+            ],limit: req.query.limit, offset: req.skip 
        })
           .then(alerts =>{
           const itemCount = alerts.count;
@@ -103,9 +116,14 @@ router.get('/alerts',(req, res, next) =>{
             {
               alerts: {[Op.like]: '%' + term + '%'}
             },
-            
+            {
+              status: {[Op.like]: '%' + term + '%'}
+            },
           ]
-          },limit: req.query.limit, offset: req.skip 
+          },
+          order: [
+            ['totalalerts', 'DESC']
+            ],limit: req.query.limit, offset: req.skip 
        })
           .then(alerts =>{
           const itemCount = alerts.count;
