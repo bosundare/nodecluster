@@ -15,7 +15,7 @@ axios.defaults.headers.common ['Authorization'] = config.axiosauth;
 const service = () => {
     setInterval(() => {
         start()
-    },24 * 60 * 60 * 1000)
+    },6 * 60 * 60 * 1000)
 
     const start = async () => {
       
