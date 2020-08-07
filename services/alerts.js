@@ -105,10 +105,10 @@ const service = () => {
               )
               .catch(err => {
                 if (err) {
-                  if (err.code == 'ECONNREFUSED'){
+                  if (err.code){
                     alert.update({
                       totalalerts: 0,
-                      alerts: 'none',
+                      alerts: 'Cluster is Unreachable',
                       status: 'Unreachable'
                     })
                   
@@ -116,7 +116,7 @@ const service = () => {
                 else if (err.response.status == 401) {
                     alert.update({
                       totalalerts: 0,
-                      alerts: 'none',
+                      alerts: 'Authentication Failed for Cluster',
                       status: 'Authentication_Error'
                     })  
                 }
