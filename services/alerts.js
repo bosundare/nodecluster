@@ -15,7 +15,7 @@ axios.defaults.headers.common ['Authorization'] = config.axiosauth;
 const service = () => {
     setInterval(() => {
         start()
-    },6 * 60 * 60 * 1000)
+    },1 * 1 * 60 * 1000)
 
     const start = async () => {
       
@@ -56,15 +56,15 @@ const service = () => {
         
         })
         .then(
-          alert => {
+           alert => {
             alert.forEach(
-              alert => {
+               async alert => {
               
               let cip = alert.cluster.clusterip
               let alerttotalnum = 0
               let alertmessage = []
     
-            axios.all([
+             await axios.all([
               axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A1082', {timeout: 5000}),
               axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A15030', {timeout: 5000}),
               axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A101048', {timeout: 5000}),
@@ -75,10 +75,11 @@ const service = () => {
               axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A106017', {timeout: 5000}),
               axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A106053', {timeout: 5000}),
               axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A1137', {timeout: 5000}),
+              axios.get('https://'+cip+':9440/PrismGateway/services/rest/v2.0/alerts/?resolved=false&alert_type_uuid=A15039', {timeout: 5000})
               
             ])
-              .then(axios.spread((nic,ipmi,offlinedisk,storagehealth,satadom,rcmperror,dimmeccerror,smsgdrive,boordrive,nodefail) => {
-                let axiosresponses = [nic,ipmi,offlinedisk,storagehealth,satadom,rcmperror,dimmeccerror,smsgdrive,boordrive,nodefail]
+              .then(axios.spread((nic,ipmi,offlinedisk,storagehealth,satadom,rcmperror,dimmeccerror,smsgdrive,boordrive,nodefail,dimmuccerror) => {
+                let axiosresponses = [nic,ipmi,offlinedisk,storagehealth,satadom,rcmperror,dimmeccerror,smsgdrive,boordrive,nodefail,dimmuccerror]
                 axiosresponses.forEach(
                   axiosres => {
                     let alertnum = axiosres.data.metadata.total_entities
