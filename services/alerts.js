@@ -21,7 +21,13 @@ const service = () => {
       
       try {
         await Alert.destroy({where: {},truncate: true}).then(console.log('Table cleared'));
-        await Cluster.findAll({})
+        await Cluster.findAll({where: { 
+          [Op.or]: [
+          {
+            clustername: {[Op.like]: '%%'}
+          },
+          ]
+        }})
         .then(
           cluster => {
             cluster.forEach(
@@ -48,8 +54,8 @@ const service = () => {
         
         })
         .then(
-           alert => {
-            alert.forEach(
+           async alert => {
+            await alert.forEach(
                alert => {
               
               let cip = alert.cluster.clusterip
