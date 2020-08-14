@@ -49,7 +49,7 @@ const service = () => {
       
         await Alert.findAll({
           where: {
-             status: {[Op.eq]: 'Unchecked'}
+            //  status: {[Op.eq]: 'Unchecked'}
           }, include: Cluster 
         
         })
@@ -118,6 +118,13 @@ const service = () => {
                       alerts: 'Authentication Failed for Cluster',
                       status: 'Authentication_Error'
                     })  
+                } 
+                else {
+                  alert.update({
+                    totalalerts: 0,
+                    alerts: 'Error Scanning Cluster',
+                    status: 'Unchecked'
+                  })
                 }
                 } 
                 }
