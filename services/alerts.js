@@ -119,13 +119,6 @@ const service = () => {
                       status: 'Authentication_Error'
                     })  
                 } 
-                else {
-                  alert.update({
-                    totalalerts: 0,
-                    alerts: 'Error Scanning Cluster',
-                    status: 'Unchecked'
-                  })
-                }
                 } 
                 }
                 )
@@ -133,11 +126,12 @@ const service = () => {
             )
           }
         );
-      
+              
       } catch (err) {
  
          console.log(err);
       }
+      
     }
 }
 service();
